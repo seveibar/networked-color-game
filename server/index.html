@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO Network Game</title>
+    <style>
+    </style>
+  </head>
+  <body>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+    var socket = io();
+    
+    function sendPosition(name, xpos, ypos){
+      var position = [ name, xpos, ypos];
+      socket.emit('position', position);
+    }
+
+    function sendStatus(status){
+      socket.emit('status', status);
+    }
+
+    function sendColor(name, color){
+      var color = [name, color];
+      socket.emit('color', color);
+    }
+
+    socket.on('position', function(position){
+      console.log(position);
+    });
+    socket.on('status', function(status){
+      console.log(status);
+    });
+    socket.on('color', function(color){
+      console.log(color);
+    });
+
+
+  </script>
+  </body>
+</html>
