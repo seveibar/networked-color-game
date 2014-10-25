@@ -2,20 +2,14 @@
 var playerSize = 25;
 var playerSpeed = 5;
 var isHost = true;
+var updateInterval = 10;
+var lastNetworkUpdate = 0;
 
 function Player(name,x,y,color){
     return {name:name,x:x,y:y,color:color,convertingTo:null,conversionProgress:0};
 }
 
 window.onload = function(){
-
-    // Get canvas and context for drawing
-    var canvas = document.getElementById("canvas");
-    var context = canvas.getContext("2d");
-
-    // Set game bounds
-    canvas.width = 500;
-    canvas.height = 500;
 
     // All the players in the game
     var allplayers = [];
@@ -32,12 +26,19 @@ window.onload = function(){
     // Mouse x and y positions
     var mx,my;
 
+    // Network id for socket communication
+    var networkID = String(Math.floor(Math.random()*99999));
+
     // Whether or not the mouse is down on canvas
     var mouseDown = false;
 
     // Host specific variables
     if (isHost){
     }
+
+    // Initialize canvas and drawings
+    drawing.init();
+    drawing.colors = colors;
 
     // Testing stuff
     allplayers.push(myplayer);
@@ -46,51 +47,23 @@ window.onload = function(){
     allplayers.push(Player("guy3",400,100,0));
 
     // Add mouse listeners to canvas to allow player movement
-    canvas.addEventListener("mousedown", function(e){
+    drawing.canvas.addEventListener("mousedown", function(e){
         mouseDown = true;
     },false);
-    canvas.addEventListener("mouseup", function(e){
+    drawing.canvas.addEventListener("mouseup", function(e){
         mouseDown = false;
     },false);
-    canvas.addEventListener("mousemove", function(e){
-        var canvasRect = canvas.getBoundingClientRect();
+    drawing.canvas.addEventListener("mousemove", function(e){
+        var canvasRect = drawing.canvas.getBoundingClientRect();
 
         mx = e.clientX - canvasRect.left;
         my = e.clientY - canvasRect.top;
 
     },false);
 
-    // Draw player
-    function drawPlayer(x,y,color){
-        // Draw an inner and outer circle
-        context.fillStyle = color;
-        context.beginPath();
-        context.arc(x, y, playerSize/2, 0, 2 * Math.PI, false);
-        context.fill();
-        context.closePath();
-        context.beginPath();
-        context.arc(x, y, playerSize*2, 0, 2 * Math.PI, false);
-        context.globalAlpha = .1;
-        context.fill();
-        context.globalAlpha = 1;
-        context.closePath();
-    }
 
-    // Draw players to screen
-    function drawCanvas(){
 
-        // Clear Canvas
-        context.fillStyle = "#fff";
-        context.fillRect(0,0,canvas.width,canvas.height);
 
-        // Draw all the players in the game
-        for (var i = 0;i < allplayers.length;i++){
-            drawPlayer(allplayers[i].x,
-                       allplayers[i].y,
-                       colors[allplayers[i].color]);
-        }
-
-    }
 
     function update(){
         // Move player if mouse is down
@@ -176,11 +149,38 @@ window.onload = function(){
             }
         }
 
-        // Draw the canvas with the updates
-        drawCanvas();
-    }
+        // NETWORK STUFF
 
-    drawCanvas();
+        network.updatePosition(networkID, myplayer.x, myplayer.y);
+
+        // Draw the canvas with the updates
+        drawing.drawCanvas(allplayers);
+    }
+    drawing.drawCanvas(allplayers);
     setInterval(update, 1000/24);
+
+
+    // Network callbacks
+    network.onPositionChange(function(id, x ,y, color){
+
+        var playerFound = false;
+
+        for (var i = 0;i < allplayers.length;i++){
+            if (allplayers[i].name == id){
+                allplayers[i].x = x;
+                allplayers[i].y = y;
+                playerFound = true;
+                break;
+            }
+        }
+
+        if (!playerFound){
+            allplayers.push(Player(id, x, y, color));
+        }
+
+    });
+
+    
+
 
 };
