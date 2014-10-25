@@ -10,16 +10,14 @@
     <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
     <script>
     var socket = io();
-    
+
     function sendPosition(name, xpos, ypos){
       var position = [ name, xpos, ypos];
       socket.emit('position', position);
     }
-
     function sendStatus(status){
       socket.emit('status', status);
     }
-
     function sendColor(name, color){
       var color = [name, color];
       socket.emit('color', color);
