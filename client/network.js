@@ -8,8 +8,8 @@ var network = (function(){
 	});
 
 	socket.on("position", function(namePosition){
-		console.log("Name: " + namePosition[0] + " X Pos: " + namePosition[1]+ " Y Pos: " + namePosition[2]);
-		network.onPositionChange(namePosition[0], namePosition[1], namePosition[2]);
+		console.log("Name: " + namePosition[0] + " X Pos: " + namePosition[1]+ " Y Pos: " + namePosition[2]+ " color; "+ namePosition[3]);
+		network.onPositionChange(namePosition[0], namePosition[1], namePosition[2], namePosition[3]);
 	});
 
 	socket.on("status", function(status){
@@ -18,7 +18,7 @@ var network = (function(){
 	});
 
 	socket.on("exit", function(name){
-		console.log("Player: " +name + " has exited ");
+		console.log("Player: " +name + " has exited");
 		network.onPlayerExit(name);
 	});
 
@@ -32,8 +32,8 @@ var network = (function(){
 	    socket.emit("Sending status:", status);
     }
 
-    function updatePosition(name, xpos, ypos){
-    	var namePosition = [name, xpos, ypos];
+    function updatePosition(name, xpos, ypos, color){
+    	var namePosition = [name, xpos, ypos, color];
 	    socket.emit("Updating position:", namePosition);
     }
 
