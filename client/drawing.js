@@ -29,8 +29,29 @@ var drawing = function(){
         context.closePath();
     }
 
+    // Draw player
+    function drawMyPlayer(x,y,color){
+
+        var context = drawing.context;
+
+        context.fillStyle = color;
+        context.beginPath();
+        context.arc(x, y, playerSize*2, 0, 2 * Math.PI, false);
+        context.globalAlpha = .1;
+        context.fill();
+        context.globalAlpha = 1;
+        context.closePath();
+
+        // Draw an inner and outer circle
+        context.fillStyle = color;
+        context.beginPath();
+        context.arc(x, y, playerSize/2, 0, 2 * Math.PI, false);
+        context.fill();
+        context.closePath();
+    }
+
     // Draw players to screen
-    function drawCanvas(allplayers){
+    function drawCanvas(allplayers, myPlayerName){
 
         if (drawing.context == null)
             return;
@@ -44,9 +65,15 @@ var drawing = function(){
 
         // Draw all the players in the game
         for (var i = 0;i < allplayers.length;i++){
-            drawPlayer(allplayers[i].x,
-                       allplayers[i].y,
-                       colors[allplayers[i].color]);
+            if (allplayers[i].name == myPlayerName){
+                drawMyPlayer(allplayers[i].x,
+                           allplayers[i].y,
+                           colors[allplayers[i].color]);
+            }else{
+                drawPlayer(allplayers[i].x,
+                           allplayers[i].y,
+                           colors[allplayers[i].color]);
+            }
         }
     }
 

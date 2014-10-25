@@ -16,13 +16,13 @@ window.onload = function(){
     var allplayers = [];
 
     // All the colors a player can be
-    var colors = ["#f00","#0f0","#00f"];
+    var colors = ["#f00","#0f0","#00f","#ff0","#0ff","#f0f"];
 
     // Your player's color
-    var mycolor = Math.floor(Math.random() * colors.length);
+    var mycolor = Math.floor(Math.random() * 3);
 
     // The player you control
-    var myplayer = Player("seve",250,250,mycolor);
+    var myplayer = Player("seve",Math.random()*500,Math.random()*500,mycolor);
 
     // Mouse x and y positions
     var mx,my;
@@ -64,7 +64,12 @@ window.onload = function(){
     },false);
 
 
-
+    window.resetGame = function(colorCount){
+        for (var i = 0;i < allplayers.length;i++){
+            allplayers[i].color = Math.floor(Math.random() * colorCount);
+            network.hostSendColor(allplayers[i].name, allplayers[i].color);
+        }
+    };
 
 
     function update(){
@@ -180,9 +185,9 @@ window.onload = function(){
         }
 
         // Draw the canvas with the updates
-        drawing.drawCanvas(allplayers);
+        drawing.drawCanvas(allplayers, networkID);
     }
-    drawing.drawCanvas(allplayers);
+    drawing.drawCanvas(allplayers, networkID);
     setInterval(update, 1000/24);
 
 
