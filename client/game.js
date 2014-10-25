@@ -1,13 +1,13 @@
 
-var playerSize = 10;
-var playerSpeed = 5;
+var playerSize = 15;
+var playerSpeed = 4;
 var conversionTime = 10;
 var isHost = window.location.href.indexOf("host") != -1;
-var updateInterval = 10;
+var updateInterval = 3;
 var lastNetworkUpdate = 0;
 
 function Player(name,x,y,color){
-    return {name:name,x:x,y:y,color:color,convertingTo:null,conversionProgress:0};
+    return {name:name,x:x,y:y,ax:x,ay:y,color:color,convertingTo:null,conversionProgress:0};
 }
 
 window.onload = function(){
@@ -105,6 +105,9 @@ window.onload = function(){
                 }else{
                     myplayer.y -= dy;
                 }
+
+                myplayer.ax = myplayer.x;
+                myplayer.ay = myplayer.y;
             }
         }
 
@@ -155,9 +158,26 @@ window.onload = function(){
             }
         }
 
+        // Linear Interpolation
+        for (var i = 0;i < allplayers.length;i++){
+            var dx = allplayers[i].x - allplayers[i].ax;
+            var dy = allplayers[i].y - allplayers[i].ay;
+            var c = Math.sqrt(dx*dx + dy*dy);
+            if (c < playerSpeed){
+                allplayers[i].x = allplayers[i].ax;
+                allplayers[i].y = allplayers[i].ay;
+            }else{
+                allplayers[i].x -= dx/c * playerSpeed;
+                allplayers[i].y -= dy/c * playerSpeed;
+            }
+        }
+
         // NETWORK STUFF
 
-        network.updatePosition(networkID, myplayer.x, myplayer.y, myplayer.color);
+        if (lastNetworkUpdate++ >= updateInterval){
+            network.updatePosition(networkID, myplayer.x, myplayer.y, myplayer.color);
+            lastNetworkUpdate = 0;
+        }
 
         // Draw the canvas with the updates
         drawing.drawCanvas(allplayers);
@@ -169,12 +189,16 @@ window.onload = function(){
     // Network callbacks
     network.onPositionChange = function(id, x ,y, color){
 
+        if (id == networkID){
+            return;
+        }
+
         var playerFound = false;
 
         for (var i = 0;i < allplayers.length;i++){
             if (allplayers[i].name == id){
-                allplayers[i].x = x;
-                allplayers[i].y = y;
+                allplayers[i].ax = x;
+                allplayers[i].ay = y;
                 playerFound = true;
                 break;
             }

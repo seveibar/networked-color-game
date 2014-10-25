@@ -18,7 +18,7 @@ var drawing = function(){
         // Draw an inner and outer circle
         context.fillStyle = color;
         context.beginPath();
-        context.arc(x, y, playerSize/2, 0, 2 * Math.PI, false);
+        context.arc(x, y, playerSize/4, 0, 2 * Math.PI, false);
         context.fill();
         context.closePath();
         context.beginPath();
