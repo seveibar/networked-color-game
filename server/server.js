@@ -8,8 +8,11 @@ app.use('/', express.static(__dirname + '/../client/'));
 io.on('connection', function(socket){
 	console.log("New Player Connected");
 
+	var clientName = "";
+
   	socket.on('position', function(position){
     	io.emit('position', position);
+		clientName = position[0];
     	console.log(position);
     });
   	socket.on('status', function(status){
@@ -20,9 +23,9 @@ io.on('connection', function(socket){
     	io.emit('color', color);
     	console.log(color);
   	});
-  socket.on('disconnect', function(name){
+  socket.on('disconnect', function(){
     console.log('user disconnected');
-    io.emit('exit', name);
+    io.emit('exit', clientName);
   });
 
 });

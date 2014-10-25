@@ -8,7 +8,7 @@ var network = (function(){
 	});
 
 	socket.on("position", function(namePosition){
-		console.log("Name: " + namePosition[0] + " X Pos: " + namePosition[1]+ " Y Pos: " + namePosition[2]+ " color; "+ namePosition[3]);
+		//console.log("Name: " + namePosition[0] + " X Pos: " + namePosition[1]+ " Y Pos: " + namePosition[2]+ " color; "+ namePosition[3]);
 		network.onPositionChange(namePosition[0], namePosition[1], namePosition[2], namePosition[3]);
 	});
 
@@ -25,16 +25,16 @@ var network = (function(){
 
     function hostSendColor(name, color){
     	var nameColor = [ name, color];
-	    socket.emit("Sending color:", nameColor);
+	    socket.emit("color", nameColor);
     }
 
     function hostSendStatus(status){
-	    socket.emit("Sending status:", status);
+	    socket.emit("status", status);
     }
 
     function updatePosition(name, xpos, ypos, color){
     	var namePosition = [name, xpos, ypos, color];
-	    socket.emit("Updating position:", namePosition);
+	    socket.emit("position", namePosition);
     }
 
 

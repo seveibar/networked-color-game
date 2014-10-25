@@ -1,7 +1,8 @@
 
-var playerSize = 25;
+var playerSize = 10;
 var playerSpeed = 5;
-var isHost = true;
+var conversionTime = 10;
+var isHost = window.location.href.indexOf("host") != -1;
 var updateInterval = 10;
 var lastNetworkUpdate = 0;
 
@@ -28,6 +29,7 @@ window.onload = function(){
 
     // Network id for socket communication
     var networkID = String(Math.floor(Math.random()*99999));
+    myplayer.name = networkID;
 
     // Whether or not the mouse is down on canvas
     var mouseDown = false;
@@ -42,9 +44,9 @@ window.onload = function(){
 
     // Testing stuff
     allplayers.push(myplayer);
-    allplayers.push(Player("guy1",150,150,0));
-    allplayers.push(Player("guy2",200,100,0));
-    allplayers.push(Player("guy3",400,100,0));
+    // allplayers.push(Player("guy1",150,150,0));
+    // allplayers.push(Player("guy2",200,100,0));
+    // allplayers.push(Player("guy3",400,100,0));
 
     // Add mouse listeners to canvas to allow player movement
     drawing.canvas.addEventListener("mousedown", function(e){
@@ -95,9 +97,13 @@ window.onload = function(){
                 }
                 if (!hitX){
                     myplayer.x += dx;
+                }else{
+                    myplayer.x -= dx;
                 }
                 if (!hitY){
                     myplayer.y += dy;
+                }else{
+                    myplayer.y -= dy;
                 }
             }
         }
@@ -134,9 +140,9 @@ window.onload = function(){
                 if (max >= 2 && maxColorIndex != allplayers[i].color){
                     if (allplayers[i].convertingTo == maxColorIndex){
                         allplayers[i].conversionProgress ++;
-                        if (allplayers[i].conversionProgress > 50){
-                            // TODO network color changing
+                        if (allplayers[i].conversionProgress > conversionTime){
                             allplayers[i].color = maxColorIndex;
+                            network.hostSendColor(allplayers[i].name, allplayers[i].color);
                         }
                     }else{
                         allplayers[i].convertingTo = maxColorIndex;
@@ -151,7 +157,7 @@ window.onload = function(){
 
         // NETWORK STUFF
 
-        network.updatePosition(networkID, myplayer.x, myplayer.y);
+        network.updatePosition(networkID, myplayer.x, myplayer.y, myplayer.color);
 
         // Draw the canvas with the updates
         drawing.drawCanvas(allplayers);
@@ -161,7 +167,7 @@ window.onload = function(){
 
 
     // Network callbacks
-    network.onPositionChange(function(id, x ,y, color){
+    network.onPositionChange = function(id, x ,y, color){
 
         var playerFound = false;
 
@@ -177,10 +183,28 @@ window.onload = function(){
         if (!playerFound){
             allplayers.push(Player(id, x, y, color));
         }
+    };
 
-    });
+    network.onColorChange = function(id, color){
+        for (var i = 0;i < allplayers.length;i++){
+            if (allplayers[i].name == id){
+                allplayers[i].color = color;
+                break;
+            }
+        }
+    };
 
-    
+    network.onPlayerExit = function(id){
+        console.log("player exit",id);
+        for (var i = 0;i < allplayers.length;i++){
+            if (allplayers[i].name == id){
+                allplayers.splice(i,1);
+                break;
+            }
+        }
+    };
+
+
 
 
 };
