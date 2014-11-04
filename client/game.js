@@ -191,8 +191,14 @@ window.onload = function(){
     setInterval(update, 1000/24);
 
 
+    window.createPlayer = function createPlayer(id, x, y, color){
+        var player = Player(id, x, y, color);
+        allplayers.push(player);
+        return player;
+    };
+
     // Network callbacks
-    network.onPositionChange = function(id, x ,y, color){
+    window.onPositionChange = network.onPositionChange = function(id, x ,y, color){
 
         if (id == networkID){
             return;
@@ -210,11 +216,11 @@ window.onload = function(){
         }
 
         if (!playerFound){
-            allplayers.push(Player(id, x, y, color));
+            createPlayer(id,x,y,color);
         }
     };
 
-    network.onColorChange = function(id, color){
+    window.onColorChange = network.onColorChange = function(id, color){
         for (var i = 0;i < allplayers.length;i++){
             if (allplayers[i].name == id){
                 allplayers[i].color = color;
@@ -223,7 +229,7 @@ window.onload = function(){
         }
     };
 
-    network.onPlayerExit = function(id){
+    window.onPlayerExit = network.onPlayerExit = function(id){
         console.log("player exit",id);
         for (var i = 0;i < allplayers.length;i++){
             if (allplayers[i].name == id){

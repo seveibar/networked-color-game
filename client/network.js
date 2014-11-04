@@ -8,7 +8,6 @@ var network = (function(){
 	});
 
 	socket.on("position", function(namePosition){
-		//console.log("Name: " + namePosition[0] + " X Pos: " + namePosition[1]+ " Y Pos: " + namePosition[2]+ " color; "+ namePosition[3]);
 		network.onPositionChange(namePosition[0], namePosition[1], namePosition[2], namePosition[3]);
 	});
 
